@@ -2,6 +2,15 @@
 
 set -e
 
+trap clean_exit EXIT
+function clean_exit {
+ local pids=$(jobs -p)
+ if [[ "$pids" != "" ]]; then
+  kill $pids 2>/dev/null || :
+ fi
+ wait $pids 2>/dev/null
+}
+
 function gen_config {
 	[ -f dh.pem ] ||
 		openssl dhparam -out dh.pem 2048
